@@ -53,7 +53,7 @@ function getPhotoData(offset) {
                 reject([404, "Server did not respond."]);
             }
         });
-        xhr.open("GET", `http://api.giphy.com/v1/gifs/search?q=funny+cat&limit=24&offset=${offset}&api_key=wOnsfsLy7eQAyyMgceH6zL4JP9OEP1rn`);
+        xhr.open("GET", `https://api.giphy.com/v1/gifs/search?q=funny+cat&limit=24&offset=${offset}&api_key=wOnsfsLy7eQAyyMgceH6zL4JP9OEP1rn`);
         xhr.send();
     });
 }
