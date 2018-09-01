@@ -10,18 +10,19 @@
 </head>
 <body>
 <nav>
-    <div id="navbar" class="sticky-nav">
-        <span>&#127758; GIPHLAR</span>
+    <div class="navbar">
+        <h1>&#127758; GIPHLAR</h1>
+        <img src="img/ref.svg" alt="Refresh icon" data-js="get-random-gifs">
     </div>
 </nav>
 <main>
     <div id="load"><img src="img/loading.gif"></div>
     <div id="fullscreen-container">
-        <div id="display-image"><img src="img/loading.gif"></div>
+        <div id="display-image"><img src="img/loading.gif" alt="Animated loading gif"></div>
         <div class="clearfix"></div>
         <div class="controls">
             <div id="previous"><img src="img/loading.gif"></div>
-            <div id="close"><span>&times;</span></div>
+            <div class="close" data-js="close"><span>&times;</span></div>
             <div id="next"><img src="img/loading.gif"></div>
         </div>
     </div>

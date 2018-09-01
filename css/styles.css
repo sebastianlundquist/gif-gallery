@@ -7,7 +7,7 @@ body {
     width: 100%;
 }
 
-.sticky-nav {
+.navbar {
     position: fixed;
     top: 0;
     width: 100%;
@@ -19,8 +19,16 @@ body {
     z-index: 2;
 }
 
-.sticky-nav span {
+.navbar h1 {
+    font-size: 20px;
     font-weight: bold;
+    margin: 0;
+}
+
+.navbar img {
+    position: absolute;
+    right: 20px;
+    top: 4px;
 }
 
 #container {
@@ -48,6 +56,7 @@ body {
     vertical-align: middle;
     width: 100%;
     border-radius: 8px;
+    cursor: pointer;
 }
 
 #load {
@@ -132,13 +141,14 @@ body {
     border-radius: 8px;
     border: 8px solid white;
     object-fit: cover;
+    cursor: pointer;
 }
 
 .controls #next img {
     float: right;
 }
 
-#close span {
+.close span {
     font-size: 34px;
     font-weight: bold;
     color: #1a53ff;
