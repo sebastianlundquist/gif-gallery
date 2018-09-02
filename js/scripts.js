@@ -1,17 +1,13 @@
-// TODO: scroll back up on refresh
-// TODO: Unload all previous images on refresh to keep memory use down (and remove bugs)
+/* Global variables
+   ========================================================================== */
 
 let photoDataArray = [];    //  To be filled with essential data about the images
 let globalPage = 0;         //  For keeping track of which page of results has been loaded
-let randomOffset = 0;
+let randomOffset = 0;       //  For displaying 'random' gifs
 let imgCounter = 0;         //  Number of images loaded in the document. Used for determining when all images have finished loading.
 
-/*  Creates a random offset to produce pseudo-random gifs from the trending section.
-    The random gif endpoint is not suitable for populating entire galleries, as it can only return one gif per API call,
-    resulting in long load times. */
-function setRandomOffset() {
-    randomOffset = Math.floor(Math.random() * 4000);
-}
+/* Main functions
+   ========================================================================== */
 
 //  Fetches the data from the server and passes on the response
 function getPhotoData(offset) {
@@ -37,11 +33,6 @@ function displayLoading(obj) {
     return obj;
 }
 
-//  Converts thumbnail image urls to high-res image urls
-function modifyURL(url) {
-    return url.replace("200w", "giphy");
-}
-
 //  Saves the height and URL for each image to be used in other functions
 function loadGifs(object) {
     for (let i = 0; i < 24; i++) {
@@ -50,19 +41,20 @@ function loadGifs(object) {
     return object;
 }
 
+//  Generates columns for the gallery and populates them with gifs
 function generateColumns() {
     let minHeight;
-    let page = document.createElement("div");
     let cols = [];
     let colHeights = [0, 0, 0, 0];
     let minCol;
+    let page = document.createElement("div");
     page.setAttribute("class", "page");
     for (let i = 0; i < 4; i++) {
         cols.push(document.createElement("div"));
         cols[i].setAttribute("class", "column");
         page.appendChild(cols[i]);
     }
-    document.getElementById("container").appendChild(page);
+    document.getElementById("gallery-container").appendChild(page);
 
     for (let i = 24 * globalPage; i < 24 * (globalPage + 1); i++) {
         minHeight = Math.min(...colHeights);
@@ -70,24 +62,20 @@ function generateColumns() {
         colHeights[minCol] += parseInt(photoDataArray[i].height);
         cols[minCol].innerHTML += `<div class="image-container"><img id="img${i}" src="${photoDataArray[i].url}"></div>`;
     }
-    colHeights = [0, 0, 0, 0];
     globalPage++;
 }
 
+//  Resolves when every image in the gallery has finished loading
 function checkLoadedImages() {
     return new Promise((resolve, reject) => {
-        let images = document.getElementById("container").getElementsByTagName("img"),
+        let images = document.getElementById("gallery-container").getElementsByTagName("img"),
             len = images.length;
         [].forEach.call(images, function (img) {
-            img.addEventListener('load', incrementCounter, false);
+            img.addEventListener("load", incrementCounter, false);
         });
 
         function incrementCounter() {
             imgCounter++;
-            //console.log(`len ${len}, imgCounter ${imgCounter}`);
-            if (imgCounter > len) {
-                imgCounter = len;
-            }
             if (imgCounter === len) {
                 resolve();
             }
@@ -95,41 +83,23 @@ function checkLoadedImages() {
     });
 }
 
-function waitForImageLoad() {
-    let image = document.querySelector("#display-image img");
-    image.setAttribute("src", "img/loading.gif");
-    return new Promise((resolve, reject) => {
-        image.addEventListener("load", function() {
-            resolve();
-        })
-    });
-}
-
+//  Hides loading screen and re-enables scroll
 function removeLoading() {
     document.getElementById("load").style.display = "none";
     enableScroll();
 }
 
-function checkForNewDiv() {
-    let lastDiv = document.querySelector("#container > div:last-child");
-    let lastDivOffset = 0;
-    if (lastDiv) {
-        lastDivOffset = lastDiv.offsetTop + lastDiv.clientHeight;
-    }
-    let pageOffset = window.pageYOffset + window.innerHeight;
+/* Fullscreen functionality
+   ========================================================================== */
 
-    if (pageOffset === lastDivOffset) {
-        init(24 * globalPage + randomOffset);
-    }
-}
+//  Declared globally for better performance
+const displayImage = document.querySelector("#display-image img");
+const previousImage = document.querySelector("#previous img");
+const nextImage = document.querySelector("#next img");
 
+//  Displays and handles the fullscreen view
 function openFullscreen(imageArray, index) {
-    let displayImage = document.querySelector("#display-image img");
-    let previousImage = document.querySelector("#previous img");
-    let nextImage = document.querySelector("#next img");
-
     disableScroll();
-
     waitForImageLoad()
         .then(function() {
             displayImage.setAttribute("src", modifyURL(imageArray[index].url));
@@ -174,9 +144,20 @@ function openFullscreen(imageArray, index) {
     };
 }
 
-/* Prevent scrolling helper functions
+//  Displays a placeholder loading gif until actual fullscreen gif has finished loading
+function waitForImageLoad() {
+    displayImage.setAttribute("src", "img/loading.gif");
+    return new Promise((resolve, reject) => {
+        displayImage.addEventListener("load", function() {
+            resolve();
+        })
+    });
+}
+
+/* Scrolling functionality
    ========================================================================== */
-let keys = {37: 1, 38: 1, 39: 1, 40: 1};
+
+const keys = {37: 1, 38: 1, 39: 1, 40: 1};
 
 function preventDefault(e) {
     e = e || window.event;
@@ -192,14 +173,16 @@ function preventDefaultForScrollKeys(e) {
     }
 }
 
+//  Prevents scrolling while in fullscreen view or while gallery is loading
 function disableScroll() {
-    window.onwheel = preventDefault; // modern standard
-    window.onmousewheel = document.onmousewheel = preventDefault; // older browsers, IE
-    window.ontouchmove  = preventDefault; // mobile
-    document.onkeydown  = preventDefaultForScrollKeys;
+    window.onwheel = preventDefault;                                //  Modern browsers
+    window.onmousewheel = document.onmousewheel = preventDefault;   //  Older browsers
+    window.ontouchmove  = preventDefault;                           //  Mobile browsers
+    document.onkeydown  = preventDefaultForScrollKeys;              //  Keyboard scroll keys
     document.body.style.touchAction = "none";
 }
 
+//  Resets scrolling functionality to normal
 function enableScroll() {
     window.onmousewheel = document.onmousewheel = null;
     window.onwheel = null;
@@ -208,22 +191,52 @@ function enableScroll() {
     document.body.style.touchAction = "auto";
 }
 
+// Loads more gifs if the user scrolls to the bottom
+function checkForNewDiv() {
+    const lastDiv = document.querySelector("#gallery-container > div:last-child");
+    let lastDivOffset = 0;
+    if (lastDiv) {
+        lastDivOffset = lastDiv.offsetTop + lastDiv.clientHeight;
+    }
+    let pageOffset = window.pageYOffset + window.innerHeight;
+
+    if (pageOffset === lastDivOffset) {
+        init(24 * globalPage + randomOffset);
+    }
+}
+
+/* Helper functions
+   ========================================================================== */
+
+//  Creates a random offset to produce pseudo-random gifs from the trending section.
+//  The random gif endpoint is not suitable for populating entire galleries, as it can only return one gif per API call,
+//  resulting in long load times.
+function setRandomOffset() {
+    randomOffset = Math.floor(Math.random() * 4000);
+}
+
+//  Converts thumbnail image urls to high-res image urls
+function modifyURL(url) {
+    return url.replace("200w", "giphy");
+}
+
 /* Event listeners
    ========================================================================== */
+
 window.addEventListener("scroll", checkForNewDiv);
 
-document.getElementById("container").addEventListener("click", (e) => {
+document.querySelector(".gallery-container[data-js=open-fullscreen]").addEventListener("click", (e) => {
     openFullscreen(photoDataArray, parseInt(e.target.id.slice(3, e.target.id.length)));
 });
 
-document.querySelector(".close[data-js=close").onclick = function () {
+document.querySelector(".close-fullscreen[data-js=close-fullscreen]").onclick = function () {
     enableScroll();
     document.getElementById("fullscreen-container").style.display = "none";
     document.querySelector("img[data-js=get-random-gifs]").style.display = "inline";
 };
 
 document.querySelector("img[data-js=get-random-gifs").onclick = function () {
-    let parent = document.getElementById("container");
+    const parent = document.getElementById("gallery-container");
     while (parent.firstChild) {
         parent.removeChild(parent.firstChild);
     }
@@ -234,6 +247,7 @@ document.querySelector("img[data-js=get-random-gifs").onclick = function () {
 
 /* Initialize page
    ========================================================================== */
+
 function init(offset) {
     getPhotoData(offset)
         .then(displayLoading)

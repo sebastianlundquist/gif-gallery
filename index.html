@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="css/normalize.css">
     <link rel="stylesheet" type="text/css" href="css/styles.css">
 </head>
-<body>
+<body class="gallery-body">
 <nav>
     <div class="navbar">
         <h1>&#127758; GIPHLAR</h1>
@@ -16,17 +16,17 @@
     </div>
 </nav>
 <main>
-    <div id="load"><img src="img/loading.gif"></div>
-    <div id="fullscreen-container">
-        <div id="display-image"><img src="img/loading.gif" alt="Animated loading gif"></div>
+    <div id="load" class="load"><img src="img/loading.gif"></div>
+    <div id="fullscreen-container" class="fullscreen-container">
+        <div id="display-image" class="display-image"><img src="img/loading.gif" alt="Animated loading gif"></div>
         <div class="clearfix"></div>
         <div class="controls">
-            <div id="previous"><img src="img/loading.gif"></div>
-            <div class="close" data-js="close"><span>&times;</span></div>
-            <div id="next"><img src="img/loading.gif"></div>
+            <div id="previous" data-js="previous-gif"><img src="img/loading.gif" alt="Animated loading gif"></div>
+            <div class="close-fullscreen" data-js="close-fullscreen"><span>&times;</span></div>
+            <div id="next" data-js="next-gif"><img src="img/loading.gif" alt="Animated loading gif"></div>
         </div>
     </div>
-    <div id="container"></div>
+    <div id="gallery-container" class="gallery-container" data-js="open-fullscreen"></div>
 </main>
 <script src="js/scripts.js"></script>
 </body>

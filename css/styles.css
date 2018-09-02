@@ -1,11 +1,13 @@
-body {
+/* Common
+   ========================================================================== */
+
+body.gallery-body {
     font-family: 'Roboto', sans-serif;
     background: linear-gradient(to bottom, #ccffdc, #b3d9ff) fixed;
 }
 
-.clearfix {
-    width: 100%;
-}
+/* Navigation
+   ========================================================================== */
 
 .navbar {
     position: fixed;
@@ -31,35 +33,10 @@ body {
     top: 4px;
 }
 
-#container {
-    padding-top: 40px;
-    max-width: 1200px;
-    margin: auto;
-}
+/* Loading screen
+   ========================================================================== */
 
-.page {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 4px;
-}
-
-.column {
-    flex: 25%;
-    max-width: 25%;
-}
-
-.column div {
-    padding: 4px;
-}
-
-.column div img {
-    vertical-align: middle;
-    width: 100%;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-#load {
+.load {
     display: none;
     position: fixed;
     z-index: 1;
@@ -72,14 +49,17 @@ body {
     background-color: rgba(255, 255, 255, 0.9);
 }
 
-#load img {
+.load img {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
 
-#fullscreen-container {
+/* Fullscreen content
+   ========================================================================== */
+
+.fullscreen-container {
     display: none;
     position: fixed;
     z-index: 1;
@@ -93,7 +73,7 @@ body {
     flex-wrap: wrap;
 }
 
-#display-image {
+.display-image {
     flex: 100%;
     width: 100%;
     max-width: 720px;
@@ -102,7 +82,7 @@ body {
     margin: auto;
 }
 
-#display-image img {
+.display-image img {
     position: absolute;
     width: calc(100% - 16px);
     max-width: 720px;
@@ -114,6 +94,11 @@ body {
     transform: translate(-50%, -32.5%);
     object-fit: contain;
 }
+
+.clearfix {
+    width: 100%;
+}
+
 .controls {
     height: 25%;
     width: 100%;
@@ -148,7 +133,7 @@ body {
     float: right;
 }
 
-.close span {
+.close-fullscreen span {
     font-size: 34px;
     font-weight: bold;
     color: #1a53ff;
@@ -162,6 +147,40 @@ body {
     margin: auto;
     cursor: pointer;
 }
+
+/* Gallery
+   ========================================================================== */
+
+.gallery-container {
+    padding-top: 40px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.page {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 4px;
+}
+
+.column {
+    flex: 25%;
+    max-width: 25%;
+}
+
+.column div {
+    padding: 4px;
+}
+
+.column div img {
+    vertical-align: middle;
+    width: 100%;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Media queries
+   ========================================================================== */
 
 @media screen and (max-width: 800px) {
     .column {
