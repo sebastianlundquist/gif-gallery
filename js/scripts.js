@@ -4,7 +4,7 @@
 let photoDataArray = [];    //  To be filled with essential data about the images.
 let globalPage = 0;         //  For keeping track of which page of results has been loaded.
 let randomOffset = 0;       //  For displaying 'random' gifs.
-let imgCounter = 0;         //  Number of images loaded in the document. Used for determining when all images have finished loading.
+let imgCounter = 0;         //  Number of images loaded in the gallery. Used for determining when all images have finished loading.
 
 /* Main functions
    ========================================================================== */
