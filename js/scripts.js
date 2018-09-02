@@ -1,15 +1,15 @@
 /* Global variables
    ========================================================================== */
 
-let photoDataArray = [];    //  To be filled with essential data about the images
-let globalPage = 0;         //  For keeping track of which page of results has been loaded
-let randomOffset = 0;       //  For displaying 'random' gifs
+let photoDataArray = [];    //  To be filled with essential data about the images.
+let globalPage = 0;         //  For keeping track of which page of results has been loaded.
+let randomOffset = 0;       //  For displaying 'random' gifs.
 let imgCounter = 0;         //  Number of images loaded in the document. Used for determining when all images have finished loading.
 
 /* Main functions
    ========================================================================== */
 
-//  Fetches the data from the server and passes on the response
+//  Fetches the data from the server and passes on the response.
 function getPhotoData(offset) {
     return new Promise((resolve, reject) => {
         let xhr = new XMLHttpRequest();
@@ -26,14 +26,14 @@ function getPhotoData(offset) {
     });
 }
 
-//  Displays a "loading" gif to be removed once all images have loaded
+//  Displays a "loading" gif to be removed once all images have loaded.
 function displayLoading(obj) {
     disableScroll();
     document.getElementById("load").style.display = "block";
     return obj;
 }
 
-//  Saves the height and URL for each image to be used in other functions
+//  Saves the height and URL for each image to be used in other functions.
 function loadGifs(object) {
     for (let i = 0; i < 24; i++) {
         photoDataArray.push({"title": object.data[i].title, "height": object.data[i].images.fixed_width.height, "url": object.data[i].images.fixed_width.url});
@@ -41,7 +41,7 @@ function loadGifs(object) {
     return object;
 }
 
-//  Generates columns for the gallery and populates them with gifs
+//  Generates columns for the gallery and populates them with gifs.
 function generateColumns() {
     let minHeight;
     let cols = [];
@@ -68,7 +68,7 @@ function generateColumns() {
     globalPage++;
 }
 
-//  Resolves when every image in the gallery has finished loading
+//  Resolves when every image in the gallery has finished loading.
 function checkLoadedImages() {
     return new Promise((resolve, reject) => {
         let images = document.getElementById("gallery-container").getElementsByTagName("img"),
@@ -86,7 +86,7 @@ function checkLoadedImages() {
     });
 }
 
-//  Hides loading screen and re-enables scroll
+//  Hides loading screen and re-enables scroll.
 function removeLoading() {
     document.getElementById("load").style.display = "none";
     enableScroll();
@@ -95,12 +95,12 @@ function removeLoading() {
 /* Fullscreen functionality
    ========================================================================== */
 
-//  Declared globally for better performance
+//  Declared globally for better performance.
 const displayImage = document.querySelector("#display-image img");
 const previousImage = document.querySelector("#previous img");
 const nextImage = document.querySelector("#next img");
 
-//  Displays and handles the fullscreen view
+//  Displays and handles the fullscreen view.
 function openFullscreen(imageArray, index) {
     disableScroll();
     waitForImageLoad()
@@ -201,7 +201,7 @@ function preventDefaultForScrollKeys(e) {
     }
 }
 
-//  Prevents scrolling while in fullscreen view or while gallery is loading
+//  Prevents scrolling while in fullscreen view or while gallery is loading.
 function disableScroll() {
     window.onwheel = preventDefault;                                //  Modern browsers
     window.onmousewheel = document.onmousewheel = preventDefault;   //  Older browsers
@@ -210,7 +210,7 @@ function disableScroll() {
     document.body.style.touchAction = "none";
 }
 
-//  Resets scrolling functionality to normal
+//  Resets scrolling functionality to normal.
 function enableScroll() {
     window.onmousewheel = document.onmousewheel = null;
     window.onwheel = null;
@@ -219,7 +219,7 @@ function enableScroll() {
     document.body.style.touchAction = "auto";
 }
 
-// Loads more gifs if the user scrolls to the bottom
+// Loads more gifs if the user scrolls to the bottom.
 function checkForNewDiv() {
     const lastDiv = document.querySelector("#gallery-container > div:last-child");
     let lastDivOffset = 0;
@@ -243,7 +243,7 @@ function setRandomOffset() {
     randomOffset = Math.floor(Math.random() * 4000);
 }
 
-//  Converts thumbnail image urls to high-res image urls
+//  Converts thumbnail image urls to high-res image urls.
 function modifyURL(url) {
     return url.replace("200w", "giphy");
 }
