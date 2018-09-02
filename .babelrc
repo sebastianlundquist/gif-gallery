@@ -1,0 +1,8 @@
+{
+  "presets": [
+    "env",
+    ["minify", {
+      "mangle": false
+    }]
+  ]
+}

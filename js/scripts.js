@@ -36,7 +36,7 @@ function displayLoading(obj) {
 //  Saves the height and URL for each image to be used in other functions
 function loadGifs(object) {
     for (let i = 0; i < 24; i++) {
-        photoDataArray.push({"height": object.data[i].images.fixed_width.height, "url": object.data[i].images.fixed_width.url});
+        photoDataArray.push({"title": object.data[i].title, "height": object.data[i].images.fixed_width.height, "url": object.data[i].images.fixed_width.url});
     }
     return object;
 }
@@ -46,12 +46,14 @@ function generateColumns() {
     let minHeight;
     let cols = [];
     let colHeights = [0, 0, 0, 0];
+    let colNums = [0, 0, 0, 0];
     let minCol;
     let page = document.createElement("div");
     page.setAttribute("class", "page");
     for (let i = 0; i < 4; i++) {
         cols.push(document.createElement("div"));
         cols[i].setAttribute("class", "column");
+        cols[i].setAttribute("id", `col${i + 4 * globalPage}`);
         page.appendChild(cols[i]);
     }
     document.getElementById("gallery-container").appendChild(page);
@@ -60,7 +62,8 @@ function generateColumns() {
         minHeight = Math.min(...colHeights);
         minCol = colHeights.indexOf(minHeight);
         colHeights[minCol] += parseInt(photoDataArray[i].height);
-        cols[minCol].innerHTML += `<div class="image-container"><img id="img${i}" src="${photoDataArray[i].url}"></div>`;
+        colNums[minCol]++;
+        cols[minCol].innerHTML += `<div class="image-container"><img id="img${i}" src="${photoDataArray[i].url}" alt="${photoDataArray[i].title}" tabindex="0"></div>`;
     }
     globalPage++;
 }
@@ -103,31 +106,46 @@ function openFullscreen(imageArray, index) {
     waitForImageLoad()
         .then(function() {
             displayImage.setAttribute("src", modifyURL(imageArray[index].url));
+            displayImage.setAttribute("alt", imageArray[index].title);
         });
 
     if(index > 0) {
         previousImage.setAttribute("src", imageArray[index-1].url);
+        previousImage.setAttribute("alt", "Previous GIF");
     }
     else {
         previousImage.setAttribute("src", "img/x.svg");
+        previousImage.setAttribute("alt", "X icon");
     }
     if(index < imageArray.length - 1) {
         nextImage.setAttribute("src", imageArray[index+1].url);
+        nextImage.setAttribute("alt", "Next GIF");
     }
     else {
         nextImage.setAttribute("src", "img/ref.svg");
+        nextImage.setAttribute("alt", "Refresh icon");
     }
 
     document.querySelector("img[data-js=get-random-gifs]").style.display = "none";
     document.getElementById("fullscreen-container").style.display = "flex";
 
-    previousImage.onclick = function () {
+    function previousImageFunction() {
         if(index > 0) {
             openFullscreen(imageArray, index - 1);
         }
+    }
+
+    previousImage.onclick = function () {
+        previousImageFunction();
     };
 
-    nextImage.onclick = function () {
+    previousImage.onkeyup = function (e) {
+        if (e.key === "Enter") {
+            previousImageFunction();
+        }
+    };
+
+    function nextImageFunction() {
         if(index < imageArray.length - 1) {
             openFullscreen(imageArray, index + 1);
         }
@@ -140,6 +158,16 @@ function openFullscreen(imageArray, index) {
                 .then(function() {
                     nextImage.setAttribute("src", imageArray[index+1].url);
                 });
+        }
+    }
+
+    nextImage.onclick = function () {
+        nextImageFunction();
+    };
+
+    nextImage.onkeyup = function (e) {
+        if (e.key === "Enter") {
+            nextImageFunction();
         }
     };
 }
@@ -223,27 +251,64 @@ function modifyURL(url) {
 /* Event listeners
    ========================================================================== */
 
-window.addEventListener("scroll", checkForNewDiv);
+function openFullscreenFunction(e) {
+    if (e.target.id.includes("img")) {
+        openFullscreen(photoDataArray, parseInt(e.target.id.slice(3, e.target.id.length)));
+        if (e.key === "Enter") {
+            document.getElementById("close-fullscreen").focus();
+        }
+    }
+}
 
-document.querySelector(".gallery-container[data-js=open-fullscreen]").addEventListener("click", (e) => {
-    openFullscreen(photoDataArray, parseInt(e.target.id.slice(3, e.target.id.length)));
-});
-
-document.querySelector(".close-fullscreen[data-js=close-fullscreen]").onclick = function () {
+function closeFullscreenFunction() {
     enableScroll();
     document.getElementById("fullscreen-container").style.display = "none";
     document.querySelector("img[data-js=get-random-gifs]").style.display = "inline";
-};
+}
 
-document.querySelector("img[data-js=get-random-gifs").onclick = function () {
+function getRandomGifs() {
     const parent = document.getElementById("gallery-container");
     while (parent.firstChild) {
         parent.removeChild(parent.firstChild);
     }
+    photoDataArray = [];
+    globalPage = 0;
     imgCounter = 0;
     setRandomOffset();
     init(randomOffset);
-};
+}
+
+document.querySelector(".gallery-container[data-js=open-fullscreen]").addEventListener("click", function (e) {
+    openFullscreenFunction(e);
+});
+
+document.querySelector(".gallery-container[data-js=open-fullscreen]").addEventListener("keyup", function (e) {
+    if (e.key === "Enter") {
+        openFullscreenFunction(e);
+    }
+});
+
+document.querySelector(".close-fullscreen span[data-js=close-fullscreen]").addEventListener("click", function (e) {
+    closeFullscreenFunction();
+});
+
+document.querySelector(".close-fullscreen span[data-js=close-fullscreen]").addEventListener("keyup", function (e) {
+    if (e.key === "Enter") {
+        closeFullscreenFunction();
+    }
+});
+
+document.querySelector("img[data-js=get-random-gifs").addEventListener("click", function () {
+    getRandomGifs();
+});
+
+document.querySelector("img[data-js=get-random-gifs").addEventListener("keyup", function (e) {
+    if (e.key === "Enter") {
+        getRandomGifs();
+    }
+});
+
+window.addEventListener("scroll", checkForNewDiv);
 
 /* Initialize page
    ========================================================================== */
